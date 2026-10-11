@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Mọi tài khoản trong bảng này đều là quản trị viên
+model User {
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  hashedPassword String
+  name           String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  events         Event[]
+}
+
+model Event {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?   @db.Text
+  location    String?
+  startTime   DateTime
+  endTime     DateTime?
+  isActive    Boolean   @default(true)
+  createdById Int
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([startTime])
+}
+
+model SystemSetting {
+  id           Int      @id @default(1)
+  agencyName   String   @default("CƠ QUAN X")
+  locationName String   @default("Hà Nội")
+  latitude     Float    @default(21.0285)
+  longitude    Float    @default(105.8542)
+  updatedAt    DateTime @updatedAt
+}
