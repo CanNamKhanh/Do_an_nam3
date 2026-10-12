@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Chỉ đặt nền ở html. Nếu body cũng có nền, nó sẽ vẽ đè lên các lớp nền/cảnh phố (z-index âm). */
+  html { @apply min-h-full bg-slate-950; }
+  body { @apply min-h-full text-white antialiased; }
+  button, a, select, summary, [role="button"] { @apply cursor-pointer; }
+  :focus-visible { @apply outline outline-2 outline-offset-2 outline-accent; }
+}
+
+@layer components {
+  .panel { @apply rounded-md border border-white/[.14] bg-[rgba(8,13,24,.38)] shadow-[inset_0_1px_0_rgba(255,255,255,.1),0_8px_32px_rgba(0,0,0,.18)] backdrop-blur-2xl backdrop-saturate-150; }
+  .lbl { @apply text-[11px] font-semibold uppercase tracking-[.14em] text-white/70; }
+  .btn { @apply cursor-pointer rounded-md border border-white/20 bg-[rgba(10,16,28,.42)] px-3.5 py-2 text-[13px] font-medium backdrop-blur-md transition-colors hover:bg-white/15 disabled:opacity-50; }
+  .btn-primary { @apply btn border-accent bg-accent font-semibold text-[#1a1405] hover:bg-[#ffe08f]; }
+  .field { @apply w-full rounded-md border border-white/20 bg-white/10 px-2.5 py-2 text-sm placeholder:text-white/40; }
+}
+
+/* ---- Cảnh phố: silhouette một màu, chỉ animate transform ---- */
+.scene { position: fixed; inset: 0; z-index: -10; pointer-events: none; overflow: hidden; color: rgba(255,255,255,.5); contain: strict; }
+.scene[data-theme="clear-day"], .scene[data-theme="cloud-day"], .scene[data-theme="fog"], .scene[data-theme="snow"] { color: rgba(14,28,46,.5); }
+.scene svg { fill: currentColor; overflow: visible; }
+.scene .abs { position: absolute; }
+.mover { position: absolute; left: 0; will-change: transform; animation: run linear infinite; }
+.mover-r { animation-name: runr; }
+@keyframes run { from { transform: translateX(-120px); } to { transform: translateX(calc(100vw + 120px)); } }
+@keyframes runr { from { transform: translateX(calc(100vw + 120px)); } to { transform: translateX(-120px); } }
+.sway { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 6s ease-in-out infinite alternate; }
+@keyframes sway { from { transform: rotate(-1.6deg); } to { transform: rotate(1.6deg); } }
+.lg { transform-box: fill-box; transform-origin: 50% 0; animation: leg .7s ease-in-out infinite alternate; }
+.lg.b { animation-direction: alternate-reverse; }
+@keyframes leg { from { transform: rotate(-24deg); } to { transform: rotate(24deg); } }
+.bob { animation: bob .35s ease-in-out infinite alternate; }
+@keyframes bob { to { transform: translateY(-1.2px); } }
+.wing { transform-box: fill-box; transform-origin: 50% 100%; animation: flap .45s ease-in-out infinite alternate; }
+@keyframes flap { to { transform: scaleY(.35); } }
+.scene .hl { fill: #ffe7a3; opacity: 0; transition: opacity 1s; }
+.scene .umb { display: none; }
+.scene[data-theme="rain"] .umb, .scene[data-theme="storm"] .umb { display: block; }
+.scene[data-theme="clear-night"] .hl, .scene[data-theme="cloud-night"] .hl, .scene[data-theme="rain"] .hl, .scene[data-theme="storm"] .hl, .scene[data-theme="fog"] .hl { opacity: .95; }
+.scene[data-theme="rain"] .bird, .scene[data-theme="storm"] .bird, .scene[data-theme="clear-night"] .bird, .scene[data-theme="cloud-night"] .bird, .scene[data-theme="snow"] .bird { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .scene .mover, .scene .bird { display: none; }
+  .sway, .lg, .bob, .wing { animation: none; }
+}
